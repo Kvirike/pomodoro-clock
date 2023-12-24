@@ -51,8 +51,13 @@ function App() {
           nextDate += second;
         } 
       }, 30);
-
+      localStorage.clear()
+      localStorage.setItem('interval-id', interval)
     }
+    if(timerOn){
+      clearInterval(localStorage.getItem("interval-id"))
+    }
+    setTimerOn(!timerOn)
 
   }
   const resetTime = () => {
