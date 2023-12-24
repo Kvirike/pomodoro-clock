@@ -7,6 +7,7 @@ function App() {
   const [breakTime, setBreakTime] = useState(5 * 60);
   const [sessionTime, setSessionTime] = useState(25 * 60);
   const [timerOn, setTimerOn] = useState(false);
+  const [onBreak, setOnbreak] = useState(false);
 
 
   const formatTime = (time) => {
@@ -36,7 +37,23 @@ function App() {
     }
   }
   const controlTime = () => {
-    
+    let second = 1000;
+    let date = new Date().getTime();
+    let nextDate = new Date().getTime() + second;
+    let onBreakVariable = onBreak;
+    if(!timerOn){
+      let interval = setInterval(() => {
+        date = new Date().getTime();
+        if(date > nextDate){
+          setDisplayTime(prev =>{
+            return prev - 1;
+          });
+          nextDate += second;
+        } 
+      }, 30);
+
+    }
+
   }
   const resetTime = () => {
     setDisplayTime(25 * 60);
