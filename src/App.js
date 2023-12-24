@@ -3,12 +3,17 @@ import { useState } from 'react';
 import './App.css';
 
 function App() {
-  const [displayTime, setDisplayTime]=useState(25*60);
-  const [breakTime, setBreakTime] = useState(5 * 60);
-  const [sessionTime, setSessionTime] = useState(25 * 60);
+  const [displayTime, setDisplayTime]=useState(5);
+  const [breakTime, setBreakTime] = useState(3);
+  const [sessionTime, setSessionTime] = useState(5);
   const [timerOn, setTimerOn] = useState(false);
   const [onBreak, setOnbreak] = useState(false);
+  const [breakAudio, setBreakAudio] = useState(new Audio('/absolute/path/to/media/alarm.mp3'));
 
+  const playBreakSound = () => {
+    breakAudio.currentTime = 0;
+    breakAudio.play()
+  }
 
   const formatTime = (time) => {
     let minutes = Math.floor(time / 60);
@@ -46,6 +51,17 @@ function App() {
         date = new Date().getTime();
         if(date > nextDate){
           setDisplayTime(prev =>{
+            if(prev <= 0 && !onBreakVariable){
+              playBreakSound();
+              onBreakVariable = true;
+              setOnbreak(true)
+              return breakTime;
+            }else if(prev <= 0 && onBreakVariable){
+              playBreakSound();
+              onBreakVariable = false;
+              setOnbreak(false)
+              return sessionTime;
+            }
             return prev - 1;
           });
           nextDate += second;
@@ -85,6 +101,7 @@ function App() {
           formatTime={formatTime}
         />
       </div>
+      <h3>{onBreak ? "Break" : "Session"}</h3>
       <h1>{formatTime(displayTime)}</h1>
       <button className='"btn-large deep-purple lighten-2' onClick={controlTime}>
         {timerOn ? 
