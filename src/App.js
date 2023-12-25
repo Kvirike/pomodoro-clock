@@ -1,14 +1,15 @@
-
 import { useState } from 'react';
 import './App.css';
+import sound from './media/alarm.mp3'
+
 
 function App() {
-  const [displayTime, setDisplayTime]=useState(5);
+  const [displayTime, setDisplayTime]=useState(2);
   const [breakTime, setBreakTime] = useState(3);
   const [sessionTime, setSessionTime] = useState(5);
   const [timerOn, setTimerOn] = useState(false);
   const [onBreak, setOnbreak] = useState(false);
-  const [breakAudio, setBreakAudio] = useState(new Audio('/absolute/path/to/media/alarm.mp3'));
+  const [breakAudio, setBreakAudio] = useState(new Audio(sound));
 
   const playBreakSound = () => {
     breakAudio.currentTime = 0;
