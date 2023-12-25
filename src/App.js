@@ -1,19 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import sound from './media/alarm.mp3'
 
 
 function App() {
-  const [displayTime, setDisplayTime]=useState(2);
-  const [breakTime, setBreakTime] = useState(3);
-  const [sessionTime, setSessionTime] = useState(5);
+  const [displayTime, setDisplayTime]= useState(25 * 6);
+  const [breakTime, setBreakTime] = useState(5 * 60);
+  const [sessionTime, setSessionTime] = useState(25 * 60);
   const [timerOn, setTimerOn] = useState(false);
   const [onBreak, setOnbreak] = useState(false);
   const [breakAudio, setBreakAudio] = useState(new Audio(sound));
 
   const playBreakSound = () => {
     breakAudio.currentTime = 0;
-    breakAudio.play()
+    breakAudio.play();
   }
 
   const formatTime = (time) => {
@@ -42,41 +42,49 @@ function App() {
       }
     }
   }
+
+  
   const controlTime = () => {
+    setTimerOn((prevTimerOn) => !prevTimerOn); // Toggle timer
+  };
+
+  useEffect(() => {
     let second = 1000;
     let date = new Date().getTime();
     let nextDate = new Date().getTime() + second;
-    let onBreakVariable = onBreak;
-    if(!timerOn){
-      let interval = setInterval(() => {
+    let interval;
+
+    if (timerOn) {
+      interval = setInterval(() => {
         date = new Date().getTime();
-        if(date > nextDate){
-          setDisplayTime(prev =>{
-            if(prev <= 0 && !onBreakVariable){
+        if (date > nextDate) {
+          setDisplayTime((prev) => {
+            if (prev <= 0 && !onBreak) {
               playBreakSound();
-              onBreakVariable = true;
-              setOnbreak(true)
+              setOnbreak(true);
               return breakTime;
-            }else if(prev <= 0 && onBreakVariable){
+            } else if (prev <= 0 && onBreak) {
               playBreakSound();
-              onBreakVariable = false;
-              setOnbreak(false)
+              setOnbreak(false);
               return sessionTime;
             }
             return prev - 1;
           });
           nextDate += second;
-        } 
+        }
       }, 30);
-      localStorage.clear()
-      localStorage.setItem('interval-id', interval)
-    }
-    if(timerOn){
-      clearInterval(localStorage.getItem("interval-id"))
-    }
-    setTimerOn(!timerOn)
 
-  }
+      localStorage.clear();
+      localStorage.setItem('interval-id', interval);
+    } else {
+      clearInterval(localStorage.getItem('interval-id'));
+    }
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [timerOn, onBreak, breakTime, sessionTime]);
+
   const resetTime = () => {
     setDisplayTime(25 * 60);
     setBreakTime(5 * 60);
